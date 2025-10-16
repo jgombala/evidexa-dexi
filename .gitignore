@@ -38,3 +38,4 @@ Thumbs.db
 # Misc
 *.tgz
 *.lock-wscript
+node_modules/
