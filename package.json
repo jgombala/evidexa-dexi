@@ -8,9 +8,22 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "description": "",
   "devDependencies": {
     "@types/node": "^24.8.0",
     "typescript": "^5.9.3"
-  }
+  },
+  "directories": {
+    "doc": "docs",
+    "test": "test"
+  },
+  "dependencies": {
+    "@ai-sdk/anthropic": "2.0.35",
+    "@ai-sdk/google": "2.0.23",
+    "@ai-sdk/openai": "2.0.53",
+    "@openai/agents": "0.1.11",
+    "ai": "5.0.76",
+    "openai": "6.6.0",
+    "undici-types": "7.14.0"
+  },
+  "description": ""
 }
