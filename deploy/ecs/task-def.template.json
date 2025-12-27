@@ -1,0 +1,51 @@
+{
+  "family": "dexi-api",
+  "networkMode": "awsvpc",
+  "requiresCompatibilities": ["FARGATE"],
+  "cpu": "512",
+  "memory": "1024",
+  "executionRoleArn": "${EXECUTION_ROLE_ARN}",
+  "taskRoleArn": "${TASK_ROLE_ARN}",
+  "containerDefinitions": [
+    {
+      "name": "dexi-api",
+      "image": "${IMAGE_URI}",
+      "essential": true,
+      "portMappings": [
+        {
+          "containerPort": 3000,
+          "protocol": "tcp"
+        }
+      ],
+      "environment": [
+        { "name": "NODE_ENV", "value": "production" },
+        { "name": "OPENAI_MODEL", "value": "gpt-5.2-2025-12-11" },
+        { "name": "OPENAI_EMBED_MODEL", "value": "text-embedding-3-large" },
+        { "name": "PROMPT_CONFIG_PATH", "value": "/app/config/prompts" },
+        { "name": "PROMPT_HOT_RELOAD", "value": "0" }
+      ],
+      "secrets": [
+        { "name": "OPENAI_API_KEY", "valueFrom": "${OPENAI_API_KEY_SECRET_ARN}" },
+        { "name": "JWT_AUDIENCE", "valueFrom": "${JWT_AUDIENCE_SECRET_ARN}" },
+        { "name": "JWT_ISSUER", "valueFrom": "${JWT_ISSUER_SECRET_ARN}" },
+        { "name": "JWKS_URI", "valueFrom": "${JWKS_URI_SECRET_ARN}" },
+        { "name": "DEXI_ISSUERS_JSON", "valueFrom": "${DEXI_ISSUERS_JSON_SECRET_ARN}" }
+      ],
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "/ecs/dexi-api",
+          "awslogs-region": "${AWS_REGION}",
+          "awslogs-stream-prefix": "ecs"
+        }
+      },
+      "healthCheck": {
+        "command": ["CMD-SHELL", "wget -qO- http://localhost:3000/health || exit 1"],
+        "interval": 30,
+        "timeout": 5,
+        "retries": 3,
+        "startPeriod": 10
+      }
+    }
+  ]
+}

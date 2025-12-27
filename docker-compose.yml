@@ -1,0 +1,16 @@
+version: '3.9'
+
+services:
+  dexi-api:
+    build: .
+    ports:
+      - '3000:3000'
+    env_file:
+      - .env
+    environment:
+      - NODE_ENV=development
+      - DEXI_DEV_AUTH=1
+      - DEXI_DEV_USER_ID=dev-user
+      - DEXI_DEV_USER_ROLE=admin
+      - OPENAI_MODEL=gpt-5.2-2025-12-11
+      - OPENAI_EMBED_MODEL=text-embedding-3-large
