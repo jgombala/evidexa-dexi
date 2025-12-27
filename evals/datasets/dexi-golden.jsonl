@@ -1,0 +1,5 @@
+{"item":{"prompt":"Ping","expected":"Pong","agent_id":"guide","application_id":"nexus"}}
+{"item":{"prompt":"Explain loss aversion in behavioral science with a short overview and 3–5 bullets.","expected":"loss aversion","agent_id":"guide","application_id":"nexus"}}
+{"item":{"prompt":"Use docs-search to find Nexus campaign docs. Summarize with citations.","expected":"campaign","agent_id":"guide","application_id":"nexus"}}
+{"item":{"prompt":"Use ui-navigator to get steps for open_campaigns.","expected":"open_campaigns","agent_id":"guide","application_id":"nexus"}}
+{"item":{"prompt":"Use rbac-inspector to check docs_search for my role.","expected":"docs_search","agent_id":"guide","application_id":"nexus"}}

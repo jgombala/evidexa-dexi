@@ -1,0 +1,37 @@
+{
+  "nexus": {
+    "root": [
+      { "route": "/", "description": "Open the root route." }
+    ],
+    "dashboard": [
+      { "route": "/dashboard", "description": "Open the dashboard." }
+    ],
+    "analytics": [
+      { "route": "/analytics", "description": "Open analytics." }
+    ],
+    "settings": [
+      { "route": "/settings", "description": "Open settings." }
+    ],
+    "participants": [
+      { "route": "/participants", "description": "Open participants." }
+    ],
+    "campaigns": [
+      { "route": "/campaigns", "description": "Open campaigns." }
+    ],
+    "campaigns_builder": [
+      { "route": "/campaigns/builder", "description": "Open campaign builder." }
+    ],
+    "campaigns_campaignId": [
+      { "route": "/campaigns/$campaignId", "description": "Open a campaign." }
+    ],
+    "campaigns_campaignId_builder": [
+      { "route": "/campaigns/$campaignId/builder", "description": "Open campaign builder for a campaign." }
+    ],
+    "campaigns_campaignId_participants_participantId": [
+      { "route": "/campaigns/$campaignId/participants/$participantId", "description": "Open a campaign participant." }
+    ],
+    "campaigns_campaignId_participants_participantId_interviews_interviewId": [
+      { "route": "/campaigns/$campaignId/participants/$participantId/interviews/$interviewId", "description": "Open a participant interview." }
+    ]
+  }
+}

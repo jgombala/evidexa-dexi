@@ -1,0 +1,43 @@
+{
+  "name": "Dexi Core Prompt Evaluation",
+  "data_source_config": {
+    "type": "custom",
+    "item_schema": {
+      "type": "object",
+      "properties": {
+        "prompt": { "type": "string" },
+        "expected": { "type": "string" },
+        "agent_id": { "type": "string" },
+        "application_id": { "type": "string" }
+      },
+      "required": ["prompt", "expected", "agent_id", "application_id"]
+    },
+    "include_sample_schema": true
+  },
+  "testing_criteria": [
+    {
+      "type": "string_check",
+      "name": "Expected text present",
+      "input": "{{ sample.output_json.text }}",
+      "operation": "ilike",
+      "reference": "%{{ item.expected }}%"
+    },
+    {
+      "type": "label_model",
+      "name": "Dexi response quality",
+      "model": "gpt-5.2-2025-12-11",
+      "labels": ["pass", "fail"],
+      "passing_labels": ["pass"],
+      "input": [
+        {
+          "role": "developer",
+          "content": "You are grading Dexi outputs. Mark pass only if the response directly addresses the prompt, includes the expected key phrase or intent, and follows the requested output shape (short overview + bullets when requested). Otherwise mark fail."
+        },
+        {
+          "role": "user",
+          "content": "Prompt: {{ item.prompt }}\nExpected: {{ item.expected }}\nOutput: {{ sample.output_json.text }}"
+        }
+      ]
+    }
+  ]
+}
