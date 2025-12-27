@@ -1,0 +1,10 @@
+[
+  {
+    "issuer": "https://login.microsoftonline.com/<tenantId>/v2.0",
+    "jwksUri": "https://login.microsoftonline.com/<tenantId>/discovery/v2.0/keys",
+    "audience": "<dexi-client-id>",
+    "tenantId": "<tenantId>",
+    "allowedAzp": ["<nexus-client-id>", "<clarity-client-id>", "<mosaic-client-id>"],
+    "appId": "nexus"
+  }
+]

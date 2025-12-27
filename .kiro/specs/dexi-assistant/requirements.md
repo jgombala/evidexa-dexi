@@ -113,3 +113,10 @@ Dexi is a multi-agent AI orchestration microservice that serves as the cognitive
 3. THE Dexi Orchestrator SHALL implement rate limiting per client application, user, and agent type
 4. THE Dexi Orchestrator SHALL authenticate all requests using JWT tokens with role-based scopes
 5. THE Dexi Orchestrator SHALL maintain immutable audit logs with consent linkage and data retention policies
+
+## MVP Implementation Notes (Current)
+- Orchestration uses OpenAI Agents SDK in Dexi (Assistants API optional later).
+- Streaming is SSE over `/api/chat` and `/api/agents/:agentId/invoke`.
+- RAG uses OpenAI Vector Stores with in-repo docs under `docs/rag/`.
+- Auth supports dev stub and JWKS/JWT verification (Cognito-ready).
+- Audit logs + PII redaction are implemented in the API service; consent linkage pending.

@@ -8,6 +8,13 @@ The architecture supports 8+ specialized agents (Guide, Interview, Waveform, Tra
 
 **Phase 1 Focus**: This design prioritizes the core orchestrator service, tool registry, and Guide Agent functionality as the foundation for the multi-agent system. Additional specialized agents will be implemented in subsequent phases, building on the established patterns and infrastructure.
 
+### MVP Implementation Notes (Current)
+- Orchestration uses OpenAI Agents SDK in-service; Assistants API is deferred.
+- Streaming responses are implemented via SSE endpoints.
+- RAG uses OpenAI Vector Stores and in-repo docs (`docs/rag/`).
+- JWT auth supports JWKS (Cognito-ready) with a dev stub for local use.
+- Prompt versions can be stored in DB; hot reload is targeted for dev.
+
 ## Architecture
 
 ### Thoughtful AWS Integration Architecture

@@ -6,6 +6,12 @@ This implementation plan converts the Dexi multi-agent AI orchestration service 
 
 Each task builds incrementally on previous work, ensuring the system remains functional at every stage. The plan prioritizes the Guide Agent and core orchestration in Phase 1, with additional agents and advanced features in subsequent phases.
 
+## Implementation Status (Current)
+- Core API skeleton, SSE streaming, tool registry, and multi-agent scaffolding are implemented.
+- RAG ingestion into pgvector is implemented for `docs/rag/`.
+- JWT/JWKS auth is supported; Cognito integration pending configuration.
+- Observability includes audit logs + PII redaction; prompt hot reload pending.
+
 ## Implementation Tasks
 
 - [ ] 1. Project Infrastructure and Core Setup

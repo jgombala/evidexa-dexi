@@ -11,6 +11,13 @@
 
 Build the **Dexi Orchestrator Service** with Guide Agent and integrate with Nexus Console. This establishes the foundation for a platform-wide AI microservice that will eventually serve all Evidexa modules.
 
+## MVP Implementation Notes (Current)
+- Orchestration is via OpenAI Agents SDK (Assistants API deferred).
+- Streaming responses are SSE over `/api/chat` and `/api/agents/:agentId/invoke`.
+- RAG ingestion targets in-repo docs under `docs/rag/` and OpenAI Vector Stores.
+- JWT auth supports JWKS (Cognito-ready) plus a dev stub for local use.
+- Dexi is internal-only; access is restricted by private networking (ALB + security groups) with JWT validation inside the service.
+
 ---
 
 ## 📐 Architecture Overview
@@ -117,7 +124,7 @@ class PolicyRouter {
 ### Day 5: Vector Store & Observability
 
 **Tasks:**
-- [ ] Setup Pinecone vector store (or pgvector)
+- [ ] Setup OpenAI Vector Stores
 - [ ] Implement document ingestion pipeline
 - [ ] Setup CloudWatch metrics
 - [ ] Setup Prometheus + Grafana
@@ -232,7 +239,7 @@ async function docsSearch(query: string, filters?: any): Promise<SearchResult> {
 ### Day 10: Guide Agent Implementation
 
 **Tasks:**
-- [ ] Create Guide Agent with OpenAI Assistants API
+- [ ] Create Guide Agent with OpenAI Responses API
 - [ ] Configure system prompt
 - [ ] Attach tools to Assistant
 - [ ] Implement conversation threading
@@ -240,23 +247,12 @@ async function docsSearch(query: string, filters?: any): Promise<SearchResult> {
 
 **Guide Agent Setup:**
 ```typescript
-const guideAssistant = await openai.beta.assistants.create({
-  name: "Dexi Guide Agent",
-  instructions: `You are Dexi, the AI assistant for Evidexa Nexus Console.
-
-Your role:
-- Help users navigate the Nexus Console
-- Answer questions about features and workflows
-- Provide step-by-step guidance
-- Check user permissions before suggesting actions
-
-Guidelines:
-- Be concise and helpful
-- Cite documentation when possible
-- Respect RBAC - only suggest actions user has permission for
-- If unsure, say so and offer to search docs`,
-  
+const response = await openai.responses.create({
   model: "gpt-5",
+  input: [
+    { role: "user", content: "How do I create a campaign?" }
+  ],
+  prompt: { id: process.env.PROMPT_ID },
   tools: [
     { type: "function", function: docsSearchTool },
     { type: "function", function: uiNavigatorTool },
@@ -280,7 +276,7 @@ Guidelines:
 - [ ] Implement `POST /api/chat` endpoint
 - [ ] Add request validation (Zod)
 - [ ] Implement context enrichment
-- [ ] Add rate limiting (Redis)
+- [ ] Add rate limiting
 - [ ] Add authentication (JWT)
 - [ ] Add request/response logging
 
@@ -300,40 +296,27 @@ app.post("/api/chat", authenticate, rateLimit, async (req, res) => {
     role: req.user.role,
   });
   
-  // 3. Create or retrieve thread
-  const thread = await getOrCreateThread(enrichedContext);
-  
-  // 4. Add user message
-  await openai.beta.threads.messages.create(thread.id, {
-    role: "user",
-    content: message,
+  // 3. Create response with prompt + tools
+  const response = await openai.responses.create({
+    model: "gpt-5",
+    input: [{ role: "user", content: message }],
+    prompt: { id: process.env.PROMPT_ID },
+    tools: [docsSearchTool, uiNavigatorTool, rbacInspectorTool],
   });
   
-  // 5. Run assistant
-  const run = await openai.beta.threads.runs.create(thread.id, {
-    assistant_id: guideAssistant.id,
-  });
-  
-  // 6. Wait for completion and handle tool calls
-  const result = await waitForCompletion(thread.id, run.id);
-  
-  // 7. Extract suggested actions
-  const actions = extractSuggestedActions(result);
-  
-  // 8. Log for analytics
+  // 4. Log for analytics
   await logInteraction({
     userId: req.user.id,
     agent: "Guide",
     message,
-    response: result.content,
-    tokensUsed: result.usage,
-    cost: calculateCost(result.usage),
+    response: response.output_text,
+    tokensUsed: response.usage,
+    cost: calculateCost(response.usage),
   });
   
-  // 9. Return response
+  // 5. Return response
   res.json({
-    reply: result.content,
-    suggestedActions: actions,
+    reply: response.output_text,
     agent: "Guide",
   });
 });
@@ -385,7 +368,7 @@ wss.on("connection", (ws, req) => {
 
 **Tasks:**
 - [ ] Implement context enrichment service
-- [ ] Add Redis caching layer
+- [ ] Add caching layer (optional)
 - [ ] Implement cache invalidation strategy
 - [ ] Add context compression (trim old messages)
 
@@ -430,7 +413,7 @@ async function enrichContext(context: Context): Promise<EnrichedContext> {
 
 **Deliverables:**
 - Context enrichment service
-- Redis caching
+- In-memory caching
 - Cache invalidation
 
 ---
@@ -562,7 +545,7 @@ class DexiClient {
 | High token costs | Aggressive caching, context compression |
 | Slow response times | Streaming responses, optimize prompts |
 | PII leakage | Strict RBAC, audit all tool outputs |
-| Vector store costs | Start with pgvector (free), migrate to Pinecone if needed |
+| Vector store costs | Start with OpenAI Vector Stores; evaluate alternatives if needed |
 
 ---
 
