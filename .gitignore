@@ -39,3 +39,8 @@ Thumbs.db
 *.tgz
 *.lock-wscript
 node_modules/
+
+# Research build artifacts
+research/*.js
+research/*.d.ts
+research/*.map
